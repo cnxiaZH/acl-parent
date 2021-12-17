@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xzh.service.mapper.SysRoleMenuMapper">
+
+    <resultMap id="SysRoleMenuResult" type="SysRoleMenu">
+        <result property="roleId" column="role_id"/>
+        <result property="menuId" column="menu_id"/>
+        <association property="sysUser" column="role_id" javaType="SysUser">
+            <result column="id" property="userId"/>
+            <result column="user_name" property="userName"/>
+        </association>
+        <association property="sysMenu" column="menu_id" javaType="SysMenu">
+            <result column="menu_name" property="menuName"/>
+            <result column="perms" property="perms"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectRoleMenuVo">
+        select rm.role_id, rm.menu_id, u.user_name, m.menu_name, m.perms
+        from sys_user_role ur
+                 inner join sys_user u on ur.user_id = u.id
+                 inner join sys_role_menu rm on ur.role_id = rm.role_id
+                 left join sys_menu m on rm.menu_id = m.menu_id
+    </sql>
+
+    <select id="selectRoleMenuByUserId" resultMap="SysRoleMenuResult">
+        <include refid="selectRoleMenuVo"></include>
+        where ur.user_id = #{id}
+    </select>
+
+</mapper>
